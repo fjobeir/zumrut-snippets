@@ -154,6 +154,7 @@ class Zumrut_Snippets {
 
 		$plugin_admin = new Zumrut_Snippets_Admin( $this->get_plugin_name(), $this->get_version() );
 
+		$this->loader->add_action( 'save_post_product', $plugin_admin, 'apply_color_images_to_variations', 11 );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 

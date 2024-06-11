@@ -51,7 +51,13 @@ class Zumrut_Snippets_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->load_modules();
+		
+	}
 
+	public function load_modules() {
+		require_once plugin_dir_path( __FILE__ ) . 'class-zumrut-settings-page.php';
+		new ZumrutSnippetsSettings();
 	}
 
 	/**
@@ -99,5 +105,48 @@ class Zumrut_Snippets_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/zumrut-snippets-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
+
+	/**
+	 * Modify the image of a variable product variation to match the color attribute.
+	 */
+	public function apply_color_images_to_variations($product_id) {
+
+        $color_tax = get_option( 'zumrut_snippets_taxonomy_slug' );
+        if (empty($color_tax)) {
+			// the color attribute slug must be set
+            return;
+        }
+        $product = wc_get_product($product_id);
+        if ($product->is_type('variable')) {
+            $variations = $product->get_children();
+            $color_images = array();
+            // Loop through variations to collect color images
+            foreach ($variations as $variation_id) {
+                $variation = wc_get_product($variation_id);
+                $attributes = $variation->get_attributes();
+                if (isset($attributes[$color_tax])) {
+                    $color = $attributes[$color_tax];
+                    if (!isset($color_images[$color])) {
+                        $image_id = $variation->get_image_id();
+                        if ($image_id) {
+                            $color_images[$color] = $image_id;
+                        }
+                    }
+                }
+            }
+            // Apply collected images to all variations of the same color
+            foreach ($variations as $variation_id) {
+                $variation = wc_get_product($variation_id);
+                $attributes = $variation->get_attributes();
+                if (isset($attributes[$color_tax])) {
+                    $color = $attributes[$color_tax];
+                    if (isset($color_images[$color])) {
+                        $variation->set_image_id($color_images[$color]);
+                        $variation->save();
+                    }
+                }
+            }
+        }
+    }
 
 }
