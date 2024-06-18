@@ -13,10 +13,10 @@ class ZumrutSnippetsSettings {
         add_menu_page(
             __("Zumrut Snippets Settings", "zumrut-snippets"),
             __("Zumrut Snippets Settings", "zumrut-snippets"),
-            'manage_options', // Capability
-            'zumrut-snippets-settings', // Menu slug
-            array( $this, 'settings_page' ), // Function to display the settings page
-            'dashicons-admin-generic' // Icon
+            'manage_options',
+            'zumrut-snippets-settings',
+            array( $this, 'settings_page' ),
+            'dashicons-admin-generic'
         );
     }
 
@@ -24,7 +24,7 @@ class ZumrutSnippetsSettings {
     public function settings_page() {
         ?>
         <div class="wrap">
-            <h1>Zumrut Snippets Settings</h1>
+            <h1><?php _e("Zumrut Snippets", "zumrut-snippets") ?></h1>
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'zumrut-snippets-color-attribute-slug' );
@@ -50,7 +50,7 @@ class ZumrutSnippetsSettings {
     }
 
     public function section_callback() {
-        echo '<p>Enter your taxonomy slug here.</p>';
+        echo '<p>' . __("Enter your taxonomy slug here", "zumrut-snippets") . '.</p>';
     }
 
     public function add_settings_field() {

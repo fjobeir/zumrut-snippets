@@ -57,7 +57,9 @@ class Zumrut_Snippets_Admin {
 
 	public function load_modules() {
 		require_once plugin_dir_path( __FILE__ ) . 'class-zumrut-settings-page.php';
+		require_once plugin_dir_path( __FILE__ ) . 'class-zumrut-products-table.php';
 		new ZumrutSnippetsSettings();
+		new ZumrutSnippetsProductsTable();
 	}
 
 	/**
