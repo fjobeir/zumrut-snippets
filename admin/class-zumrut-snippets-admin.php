@@ -58,8 +58,8 @@ class Zumrut_Snippets_Admin {
 	public function load_modules() {
 		require_once plugin_dir_path( __FILE__ ) . 'class-zumrut-settings-page.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-zumrut-products-table.php';
-		new ZumrutSnippetsSettings();
-		new ZumrutSnippetsProductsTable();
+		new Zumrut_Snippets_Settings();
+		new Zumrut_Snippets_Products_Table();
 	}
 
 	/**
@@ -81,7 +81,7 @@ class Zumrut_Snippets_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/zumrut-snippets-admin.css', array(), $this->version, 'all' );
+		// wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/zumrut-snippets-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -104,7 +104,7 @@ class Zumrut_Snippets_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/zumrut-snippets-admin.js', array( 'jquery' ), $this->version, false );
+		// wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/zumrut-snippets-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 
