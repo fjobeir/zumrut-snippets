@@ -20,7 +20,8 @@
  * @subpackage Zumrut_Snippets/admin
  * @author     Feras Jobeir <fjobeir@fjobeir.com>
  */
-class Zumrut_Snippets_Admin {
+class Zumrut_Snippets_Admin
+{
 
 	/**
 	 * The ID of this plugin.
@@ -47,17 +48,18 @@ class Zumrut_Snippets_Admin {
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct($plugin_name, $version)
+	{
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->load_modules();
-		
 	}
 
-	public function load_modules() {
-		require_once plugin_dir_path( __FILE__ ) . 'class-zumrut-settings-page.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-zumrut-products-table.php';
+	public function load_modules()
+	{
+		require_once plugin_dir_path(__FILE__) . 'class-zumrut-settings-page.php';
+		require_once plugin_dir_path(__FILE__) . 'class-zumrut-products-table.php';
 		new Zumrut_Snippets_Settings();
 		new Zumrut_Snippets_Products_Table();
 	}
@@ -67,7 +69,8 @@ class Zumrut_Snippets_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles()
+	{
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -90,7 +93,8 @@ class Zumrut_Snippets_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts()
+	{
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -111,44 +115,63 @@ class Zumrut_Snippets_Admin {
 	/**
 	 * Modify the image of a variable product variation to match the color attribute.
 	 */
-	public function apply_color_images_to_variations($product_id) {
+	public function apply_color_images_to_variations($product_id)
+	{
+		$color_tax = get_option('zumrut_snippets_taxonomy_slug');
+		if (empty($color_tax)) {
+			// The color attribute slug must be set
+			return;
+		}
 
-        $color_tax = get_option( 'zumrut_snippets_taxonomy_slug' );
-        if (empty($color_tax)) {
-			// the color attribute slug must be set
-            return;
-        }
-        $product = wc_get_product($product_id);
-        if ($product->is_type('variable')) {
-            $variations = $product->get_children();
-            $color_images = array();
-            // Loop through variations to collect color images
-            foreach ($variations as $variation_id) {
-                $variation = wc_get_product($variation_id);
-                $attributes = $variation->get_attributes();
-                if (isset($attributes[$color_tax])) {
-                    $color = $attributes[$color_tax];
-                    if (!isset($color_images[$color])) {
-                        $image_id = $variation->get_image_id();
-                        if ($image_id) {
-                            $color_images[$color] = $image_id;
-                        }
-                    }
-                }
-            }
-            // Apply collected images to all variations of the same color
-            foreach ($variations as $variation_id) {
-                $variation = wc_get_product($variation_id);
-                $attributes = $variation->get_attributes();
-                if (isset($attributes[$color_tax])) {
-                    $color = $attributes[$color_tax];
-                    if (isset($color_images[$color])) {
-                        $variation->set_image_id($color_images[$color]);
-                        $variation->save();
-                    }
-                }
-            }
-        }
-    }
+		$product = wc_get_product($product_id);
+		if ($product->is_type('variable')) {
+			$variations = $product->get_children();
+			$color_images = array();
 
+			// Loop through variations to collect color images
+			foreach ($variations as $variation_id) {
+				$variation = wc_get_product($variation_id);
+				$attributes = $variation->get_attributes();
+				if (isset($attributes[$color_tax])) {
+					$color = $attributes[$color_tax];
+					if (!isset($color_images[$color])) {
+						$color_images[$color] = array(
+							'main' => $variation->get_image_id(),
+							'gallery' => array()
+						);
+					}
+
+					// Collect extra images
+					$extra_images = get_post_meta($variation_id, 'rey_extra_variation_images', true);
+					if (!empty($extra_images)) {
+						$extra_images_array = (array)(explode(',', $extra_images));
+						$color_images[$color]['gallery'] = array_unique(array_merge($color_images[$color]['gallery'], $extra_images_array));
+					}
+				}
+			}
+
+			// wp_send_json($color_images);
+
+			// Apply collected images to all variations of the same color
+			foreach ($variations as $variation_id) {
+				$variation = wc_get_product($variation_id);
+				$attributes = $variation->get_attributes();
+				if (isset($attributes[$color_tax])) {
+					$color = $attributes[$color_tax];
+					if (isset($color_images[$color])) {
+						// Update main image
+						if (!empty($color_images[$color]['main'])) {
+							$variation->set_image_id($color_images[$color]['main']);
+							$variation->save();
+						}
+						// Update extra images
+						if (!empty($color_images[$color]['gallery'])) {
+							$extra_images = implode(',', array_unique($color_images[$color]['gallery']));
+							update_post_meta($variation_id, 'rey_extra_variation_images', $extra_images);
+						}
+					}
+				}
+			}
+		}
+	}
 }
