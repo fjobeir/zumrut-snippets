@@ -150,8 +150,6 @@ class Zumrut_Snippets_Admin
 				}
 			}
 
-			// wp_send_json($color_images);
-
 			// Apply collected images to all variations of the same color
 			foreach ($variations as $variation_id) {
 				$variation = wc_get_product($variation_id);
@@ -173,5 +171,10 @@ class Zumrut_Snippets_Admin
 				}
 			}
 		}
+	}
+	public function respond_to_product_import($product_id)
+	{
+		echo 'HIIIIIII';
+		$this->apply_color_images_to_variations($product_id);
 	}
 }

@@ -159,6 +159,8 @@ class Zumrut_Snippets
 		$this->loader->add_action('save_post_product', $plugin_admin, 'apply_color_images_to_variations', 99);
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+
+		add_action('mi_after_import_product', array($plugin_admin, 'respond_to_product_import'), 10, 2);
 	}
 
 	/**
