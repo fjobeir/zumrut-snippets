@@ -174,7 +174,6 @@ class Zumrut_Snippets_Admin
 	}
 	public function respond_to_product_import($product_id)
 	{
-		echo 'HIIIIIII';
 		$this->apply_color_images_to_variations($product_id);
 	}
 }
