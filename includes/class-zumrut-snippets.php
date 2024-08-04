@@ -160,7 +160,7 @@ class Zumrut_Snippets
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
 
-		add_action('mi_after_import_product', array($plugin_admin, 'respond_to_product_import'), 10, 2);
+		add_action('mi_after_import_trendyol_images', array($plugin_admin, 'respond_to_product_import'), 10, 2);
 	}
 
 	/**

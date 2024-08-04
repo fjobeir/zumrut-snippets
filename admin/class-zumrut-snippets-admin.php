@@ -124,6 +124,9 @@ class Zumrut_Snippets_Admin
 		}
 
 		$product = wc_get_product($product_id);
+		$product_thumbnail_id = $product->get_image_id();
+		$product_gallery_ids = $product->get_gallery_image_ids();
+
 		if ($product->is_type('variable')) {
 			$variations = $product->get_children();
 			$color_images = array();
@@ -159,11 +162,24 @@ class Zumrut_Snippets_Admin
 					if (isset($color_images[$color])) {
 						// Update main image
 						if (!empty($color_images[$color]['main'])) {
+							$current_image_id = $variation->get_image_id();
+							if ($current_image_id != $color_images[$color]['main'] && $current_image_id != $product_thumbnail_id && !in_array($current_image_id, $product_gallery_ids)) {
+								wp_delete_attachment($current_image_id, true);
+							}
 							$variation->set_image_id($color_images[$color]['main']);
 							$variation->save();
 						}
 						// Update extra images
 						if (!empty($color_images[$color]['gallery'])) {
+							$current_extra_images = get_post_meta($variation_id, 'rey_extra_variation_images', true);
+							if (!empty($current_extra_images)) {
+								$current_extra_images_array = (array)(explode(',', $current_extra_images));
+								foreach ($current_extra_images_array as $image_id) {
+									if ($image_id != $color_images[$color]['main'] && !in_array($image_id, $color_images[$color]['gallery']) && $image_id != $product_thumbnail_id && !in_array($image_id, $product_gallery_ids)) {
+										wp_delete_attachment($image_id, true);
+									}
+								}
+							}
 							$extra_images = implode(',', array_unique($color_images[$color]['gallery']));
 							update_post_meta($variation_id, 'rey_extra_variation_images', $extra_images);
 						}
